@@ -160,14 +160,15 @@ export async function updateAndApproveAnuncio(
 
     console.log(`Anúncio ${id} atualizado e aprovado com sucesso.`);
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Erro na operação de atualização:', err);
-    return { success: false, error: `Erro interno: ${err.message}` };
+    const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
+    return { success: false, error: `Erro interno: ${errorMessage}` };
   }
 }
 
 // Função para buscar os detalhes de um anúncio específico
-export async function getAnuncioDetails(id: string): Promise<{ data?: any; error?: string }> {
+export async function getAnuncioDetails(id: string): Promise<{ data?: Record<string, unknown>; error?: string }> {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
 

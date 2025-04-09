@@ -6,7 +6,7 @@ import { notFound } from 'next/navigation'; // Para redirecionar se anúncio nã
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Button } from '@/components/ui/button';
-import { Globe, Link as LinkIcon, MapPin, ArrowLeft } from 'lucide-react'; // Ícones
+import { Link as LinkIcon, MapPin, ArrowLeft } from 'lucide-react'; // Ícones
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import type { Anuncio } from '@/components/anuncios/AnuncioCard'; // Importar o tipo Anuncio
@@ -53,18 +53,23 @@ export default async function AnuncioPage({ params }: AnuncioPageProps) {
   // Exemplo se for um JSON na coluna 'redes_sociais' com chaves 'facebook', 'instagram' etc.
   let redesSociaisLinks: { key: string, url: string }[] = [];
   if (anuncio.redes_sociais && typeof anuncio.redes_sociais === 'object') {
-     // @ts-ignore TODO: Type this properly
-    redesSociaisLinks = Object.entries(anuncio.redes_sociais)
-                               // @ts-ignore TODO: Type this properly
-                              .filter(([key, value]) => value) // Filtrar links vazios
-                              .map(([key, value]) => ({ key: key.charAt(0).toUpperCase() + key.slice(1), url: value as string }));
+    // Tratar os tipos corretamente
+    const redesSociaisEntries = Object.entries(anuncio.redes_sociais as Record<string, string>);
+    redesSociaisLinks = redesSociaisEntries
+      .filter(([_, value]) => value) // Filtrar links vazios
+      .map(([key, value]) => ({ 
+        key: key.charAt(0).toUpperCase() + key.slice(1), 
+        url: value 
+      }));
   }
   // Se os links forem colunas separadas (ex: link_facebook, link_instagram), adapte a lógica
 
-   // Tratamento da localização (assumindo objeto com latitude, longitude, endereco)
-   // @ts-ignore TODO: Type this properly
-   const endereco = anuncio.localizacao?.endereco || 'Localização não informada';
-   // Poderíamos adicionar um mapa aqui usando latitude/longitude
+  // Tratamento da localização (assumindo objeto com latitude, longitude, endereco)
+  const endereco = 
+    anuncio.localizacao && typeof anuncio.localizacao === 'object' && 'endereco' in anuncio.localizacao
+      ? (anuncio.localizacao.endereco as string)
+      : 'Localização não informada';
+  // Poderíamos adicionar um mapa aqui usando latitude/longitude
 
   return (
     <main className="container mx-auto max-w-4xl px-4 py-8 md:py-12">

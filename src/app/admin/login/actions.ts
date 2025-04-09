@@ -6,7 +6,8 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 
 export async function login(formData: FormData) {
-  const supabase = createClient(); // Chama sem argumentos
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
 
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;

@@ -34,7 +34,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
@@ -83,7 +82,7 @@ export function EditarAnuncioClient({ id }: { id: string }) {
   const [images, setImages] = useState<ImageData[]>([]);
   const [anuncioCarregado, setAnuncioCarregado] = useState(false);
   // Novo estado para armazenar os dados do anúncio
-  const [anuncioData, setAnuncioData] = useState<any>(null);
+  const [anuncioData, setAnuncioData] = useState<Record<string, unknown> | null>(null);
   const router = useRouter();
   const supabase = createClient();
   const anuncioId = id;
@@ -187,7 +186,12 @@ export function EditarAnuncioClient({ id }: { id: string }) {
           ? String(anuncioData.categoria_id) 
           : "",
         numeroWhatsapp: anuncioData.numero_whatsapp || "",
-        redesSociais: anuncioData.links_redes_sociais || {},
+        redesSociais: (anuncioData.links_redes_sociais as Record<string, string>) || {
+          instagram: '',
+          tiktok: '',
+          facebook: '',
+          website: ''
+        },
       };
       
       // Debug do categoriaId específico
@@ -201,24 +205,25 @@ export function EditarAnuncioClient({ id }: { id: string }) {
       console.log("Redes sociais encontradas:", redesSociais);
       
       // Extrair o username do Instagram (remover instagram.com/)
-      const instagram = redesSociais?.instagram 
+      const instagram = redesSociais.instagram && typeof redesSociais.instagram === 'string'
         ? redesSociais.instagram.replace('instagram.com/', '').replace('https://', '').replace('http://', '') 
         : '';
 
       // Extrair o username do TikTok (remover tiktok.com/)
-      const tiktok = redesSociais?.tiktok
+      const tiktok = redesSociais.tiktok && typeof redesSociais.tiktok === 'string'
         ? redesSociais.tiktok.replace('tiktok.com/', '').replace('https://', '').replace('http://', '')
         : '';
         
       // Extrair o username do Facebook (remover facebook.com/)
-      const facebook = redesSociais?.facebook
+      const facebook = redesSociais.facebook && typeof redesSociais.facebook === 'string'
         ? redesSociais.facebook.replace('facebook.com/', '').replace('https://', '').replace('http://', '')
         : '';
         
       // Website (manter completo, mas garantir formato adequado)
-      const website = anuncioData.website || (redesSociais?.website 
-        ? redesSociais.website.replace('https://', '').replace('http://', '') 
-        : '');
+      const website = (anuncioData.website as string) || 
+        (redesSociais.website && typeof redesSociais.website === 'string'
+          ? redesSociais.website.replace('https://', '').replace('http://', '') 
+          : '');
       
       console.log("Valores processados para o formulário:", {
         titulo: anuncio.titulo,
@@ -232,12 +237,12 @@ export function EditarAnuncioClient({ id }: { id: string }) {
         website
       });
       
-      // Preencher campos um por um
-      form.setValue('titulo', anuncio.titulo);
-      form.setValue('nomeAnunciante', anuncio.nomeAnunciante);
-      form.setValue('descricao', anuncio.descricao);
+      // Preencher campos um por um usando type assertions para garantir que são strings
+      form.setValue('titulo', String(anuncio.titulo));
+      form.setValue('nomeAnunciante', String(anuncio.nomeAnunciante));
+      form.setValue('descricao', String(anuncio.descricao));
       form.setValue('categoriaId', anuncio.categoriaId);
-      form.setValue('numeroWhatsapp', anuncio.numeroWhatsapp);
+      form.setValue('numeroWhatsapp', String(anuncio.numeroWhatsapp));
       form.setValue('instagram', instagram);
       form.setValue('tiktok', tiktok);
       form.setValue('facebook', facebook);
@@ -249,7 +254,6 @@ export function EditarAnuncioClient({ id }: { id: string }) {
     router.push('/admin/dashboard');
   };
 
-  // Função para upload de imagens ao Supabase
   const uploadImageToSupabase = async (file: File): Promise<string | null> => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${uuidv4()}.${fileExt}`;
@@ -258,17 +262,28 @@ export function EditarAnuncioClient({ id }: { id: string }) {
     try {
       console.log("Iniciando upload da imagem:", file.name, "Tamanho:", (file.size / 1024).toFixed(2), "KB");
       
-      // Upload para o Supabase
-      const { data: uploadResult, error: uploadError } = await supabase.storage
+      // Verificar se temos permissão para acessar o Storage
+      const { data: buckets, error: bucketsError } = await supabase
+        .storage
+        .listBuckets();
+      
+      if (bucketsError) {
+        console.error("Erro ao acessar o Storage:", bucketsError);
+        throw new Error(`Não foi possível acessar o Storage: ${bucketsError.message}`);
+      }
+      
+      console.log("Buckets disponíveis:", buckets?.map(b => b.name).join(", ") || "Nenhum");
+      
+      // Tentar upload
+      const { error } = await supabase.storage
         .from('anuncios')
         .upload(filePath, file, {
           upsert: true,
           cacheControl: '3600',
         });
-        
-      if (uploadError) {
-        console.error("Erro no upload:", uploadError);
-        throw uploadError;
+          
+      if (error) {
+        throw error;
       }
 
       // Obter URL pública da imagem
@@ -278,9 +293,9 @@ export function EditarAnuncioClient({ id }: { id: string }) {
 
       console.log("Upload concluído com sucesso:", urlData.publicUrl);
       return urlData.publicUrl;
-    } catch (error: any) {
-      console.error('Erro no upload da imagem:', error);
-      setError(`Erro no upload: ${error.message || 'Ocorreu um erro desconhecido'}`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      console.error('Erro no upload da imagem:', errorMessage);
       return null;
     }
   };
@@ -346,7 +361,7 @@ export function EditarAnuncioClient({ id }: { id: string }) {
         descricao: values.descricao,
         categoriaId: categoriaIdNum,
         numeroWhatsapp: values.numeroWhatsapp,
-        redesSociais: Object.keys(redesSociais).length > 0 ? redesSociais : {},
+        redesSociais: redesSociais as Record<string, string>,
         imagens: imagensUrls
       });
 
@@ -363,10 +378,11 @@ export function EditarAnuncioClient({ id }: { id: string }) {
       setTimeout(() => {
         router.push('/admin/dashboard');
       }, 1500);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro ao atualizar anúncio:', error);
-      setError(error.message || 'Ocorreu um erro ao processar o anúncio');
-      toast.error(error.message || 'Ocorreu um erro ao processar o anúncio');
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

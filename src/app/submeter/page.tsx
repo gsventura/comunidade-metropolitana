@@ -74,7 +74,6 @@ export default function SubmeterAnuncioPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [imagePreviewUrls, setImagePreviewUrls] = useState<string[]>([]);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [images, setImages] = useState<ImageData[]>([]);
