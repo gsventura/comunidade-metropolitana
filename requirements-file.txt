@@ -1,0 +1,162 @@
+A seguir, apresentamos um documento completo de Especificação de Requisitos de Software (SRS) para um aplicativo web em React que servirá como um quadro de classificados para a Igreja Presbiteriana Metropolitana. Esse SRS descreve de forma detalhada as funcionalidades, requisitos funcionais e não funcionais, além de oferecer um ponto de partida para o desenvolvimento utilizando Next.JS, shadcn, Tailwind CSS e Supabase.
+
+## 1. Introdução
+
+**1.1 Propósito**  
+Este documento define os requisitos do aplicativo “Comunidade Igreja Presbiteriana Metropolitana”. O sistema tem como finalidade oferecer uma plataforma onde os membros da igreja possam publicar anúncios referentes a serviços, empresas, ou produtos, permitindo a troca de bens e serviços de forma colaborativa. As publicações podem ser realizadas sem autenticação, porém deverão passar por um fluxo de aprovação realizado por administradores autenticados.
+
+**1.2 Escopo do Produto**  
+O aplicativo suportará:  
+- Submissão de anúncios de forma anônima (sem necessidade de login pelo usuário comum).  
+- Fluxo de aprovação e moderação dos anúncios por administradores autenticados.  
+- Exibição de anúncios com campos como título, descrição, fotos, localização, links para redes sociais e número de WhatsApp, dentre outros campos que se julgar relevante.  
+- Filtros avançados por categoria e proximidade (baseados em localização).  
+- Interface moderna e responsiva, possibilitada pelo uso de shadcn e Tailwind CSS.  
+- Integração com Supabase para gerenciamento de banco de dados e autenticação de administradores.  
+
+**1.3 Definições, Acrônimos e Abreviações**  
+- **SRS:** Software Requirements Specification (Especificação de Requisitos de Software).  
+- **UI/UX:** Interface/Experiência do Usuário.  
+- **API:** Interface de Programação de Aplicações.  
+- **CRUD:** Operações de criação, leitura, atualização e deleção de dados.
+
+**1.4 Referências**  
+Este documento baseia-se em boas práticas de engenharia de software e na necessidade de criar um sistema simplificado de classificados para uma comunidade. Como referência, podem ser utilizadas metodologias como IEEE 830 para a organização do SRS.
+
+## 2. Descrição Geral
+
+**2.1 Perspectiva do Produto**  
+O sistema será um aplicativo web único, integrado ao contexto da Igreja Presbiteriana Metropolitana, que permitirá a exibição e gerenciamento de anúncios de classificados. Ele atuará como um ponto de encontro digital onde os membros poderão oferecer seus serviços e produtos, promovendo a interação e o suporte mútuo na comunidade.
+
+**2.2 Funções do Produto**  
+- Permitir que qualquer membro submeta um anúncio sem estar autenticado.  
+- Armazenar e exibir anúncios contendo título, descrição detalhada, imagens, localização geográfica, links para redes sociais e contato via WhatsApp.  
+- Suporte à inclusão de campos adicionais, conforme boas práticas (por exemplo, data de publicação, categoria do anúncio e preço, se aplicável).  
+- Fluxo de aprovação: Anúncios submetidos devem ficar pendentes até a moderação por administradores autenticados.  
+- Ferramentas de busca e filtragem por categorias, proximidade e palavras-chave.  
+- Interface de gerenciamento para administradores com funcionalidades de edição, aprovação, rejeição e deleção de anúncios.
+
+**2.3 Características dos Usuários**  
+- **Usuários Comuns:** Membros da igreja que submetem anúncios sem autenticação prévia.  
+- **Administradores:** Usuários autenticados (através de Supabase) que têm permissão para moderar e gerenciar os anúncios, garantindo que apenas conteúdos adequados sejam publicados.  
+- **Visitantes:** Qualquer usuário que acesse o site para visualizar os anúncios com filtros disponíveis.
+
+**2.4 Restrições e Dependências**  
+- O desenvolvimento deve ser feito utilizando:  
+  - **Next.JS** como bundler e ferramenta de build para o projeto React.  
+  - **shadcn** para componentes UI reutilizáveis.  
+  - **Tailwind CSS** para a estilização e customização da interface.  
+  - **Supabase** para o gerenciamento de banco de dados e autenticação dos administradores.  
+- O sistema deve estar limitado por questões de segurança, desempenho e responsividade para uso em dispositivos móveis e desktops.
+
+## 3. Requisitos Funcionais
+
+| Requisito | Descrição |
+| --------- | --------- |
+| **RF001 – Submissão de Anúncios** | Permitir que qualquer usuário submeta um anúncio sem precisar de autenticação. Os campos obrigatórios deverão incluir: título, descrição, categoria, imagens, localização, links para redes sociais e número de WhatsApp. Campos opcionais podem ser adicionados conforme a necessidade (ex.: preço, data de publicação). |
+| **RF002 – Fluxo de Aprovação** | Todos os anúncios submetidos deverão ser marcados com o status “Pendente”. Administradores autenticados terão acesso a um painel de moderação para aprovar ou rejeitar os anúncios. |
+| **RF003 – Gerenciamento de Anúncios** | Administradores poderão editar, eliminar e gerenciar os anúncios aprovados. O sistema deverá manter um histórico de alterações e registro de quem aprovou ou rejeitou um anúncio. |
+| **RF004 – Filtros e Busca** | Usuários poderão filtrar os anúncios por categoria, localização (proximidade) e utilizando uma barra de pesquisa por palavras-chave. |
+| **RF005 – Interface Usuário** | O aplicativo deverá possuir uma interface responsiva, moderna e intuitiva. Será desenvolvido utilizando Tailwind CSS e a biblioteca de componentes shadcn, garantindo uma navegação amigável. |
+| **RF006 – Integração com Supabase** | Utilizar Supabase para: (a) armazenar os dados dos anúncios e dos administradores, e (b) gerenciar a autenticação para o painel administrativo. |
+| **RF007 – Notificações (opcional)** | Notificar administradores quando novos anúncios forem submetidos, possibilitando uma resposta rápida para a moderação. |
+
+## 4. Requisitos Não Funcionais
+
+| Requisito Não Funcional | Descrição |
+| ----------------------- | --------- |
+| **RNF001 – Desempenho** | O sistema deverá responder a requisições (ex.: carregar anúncios) em até 2 segundos para 95% dos casos em conexões normais. |
+| **RNF002 – Segurança** | Somente administradores poderão acessar as funções de aprovação e gestão. Implementar práticas de segurança, incluindo proteção contra injeção de SQL, XSS e outros ataques comuns. |
+| **RNF003 – Usabilidade** | A interface deverá ser intuitiva e responsiva, garantindo acessibilidade em dispositivos móveis e desktops. |
+| **RNF004 – Escalabilidade** | O design do banco de dados e a arquitetura do aplicativo deverão permitir a escalabilidade, possibilitando o aumento de volume de dados e usuários sem prejuízo de desempenho. |
+| **RNF005 – Compatibilidade** | O aplicativo deverá ser compatível com os navegadores modernos (Chrome, Firefox, Safari, Edge). |
+
+## 5. Modelos de Dados e Esquemas
+
+**Entidade: Anúncio**  
+- id (UUID)  
+- título (string)  
+- descrição (texto)  
+- categoria (string)  
+- imagens (array ou links para arquivos armazenados)  
+- localização (latitude, longitude e endereço)  
+- links para redes sociais (JSON ou conjunto de campos separados)  
+- número de WhatsApp (string)  
+- status (enum: Pendente, Aprovado, Rejeitado)  
+- data de submissão (timestamp)  
+
+**Entidade: Administrador**  
+- id (UUID)  
+- nome  
+- e-mail  
+- senha (armazenada de forma segura)  
+
+**Entidade: Categoria**  
+- id  
+- nome da categoria  
+- descrição (opcional)
+
+## 6. Interface do Usuário
+
+**Páginas principais:**
+
+| Página | Descrição |
+| ------ | --------- |
+| **Página Inicial** | Exibe um dashboard com os anúncios aprovados, barras de pesquisa e filtros (por categoria e proximidade/topografia). |
+| **Página de Submissão de Anúncios** | Formulário simples para a criação de anúncio sem necessidade de autenticação, informando os campos obrigatórios e opcionais. |
+| **Painel Administrativo** | Área restrita para administradores, contendo lista de anúncios pendentes, botões para aprovação/rejeição, edição e visualização de histórico. |
+| **Página de Detalhes do Anúncio** | Exibe todos os detalhes do anúncio, imagens em destaque, informações de contato e links para redes sociais. |
+
+## 7. Plano de Implementação
+
+**Etapas sugeridas:**
+
+- **Configuração do Ambiente de Desenvolvimento:**  
+  - Iniciar o projeto com Next.JS utilizando React:  
+   
+  - Instalar e configurar o Tailwind CSS e shadcn:  
+   
+  - Instalar o cliente Supabase:  
+    
+
+- **Definição do Esquema do Banco de Dados no Supabase:**  
+  - Criar tabelas para “anúncios”, “administradores” e “categorias”.  
+  - Configurar regras de acesso para que apenas administradores possam aprovar ou editar anúncios.
+
+- **Desenvolvimento do Frontend:**  
+  - Implementar páginas e componentes utilizando React, shadcn e Tailwind CSS para garantir uma interface responsiva e moderna.  
+  - Desenvolver o fluxo de submissão de anúncios e o painel de administração com autenticação via Supabase.
+
+- **Integração e Testes:**  
+  - Integrar o frontend com o backend via Supabase.  
+  - Implementar testes unitários e de integração para validar os fluxos principais, como a submissão de anúncios e o sistema de moderação.
+
+## 8. Critérios de Aceitação e Plano de Testes
+
+**Critérios de Aceitação:**  
+- Usuários podem submeter anúncios sem necessidade de login e os anúncios submetidos entram no status “Pendente”.  
+- Administradores autenticados conseguem acessar o painel administrativo para aprovar, rejeitar ou editar anúncios.  
+- Filtros por categoria e localização funcionam de forma intuitiva, permitindo a fácil busca de anúncios.  
+- A interface final é responsiva, acessível e possui uma experiência de usuário (UX) elegante e intuitiva.
+
+**Plano de Testes:**  
+- Testar o fluxo de criação e submissão de anúncios.  
+- Validar as funcionalidades de moderação administradora (aprovação/rejeição).  
+- Realizar testes de usabilidade para os componentes de pesquisa e filtragem.  
+- Executar testes de desempenho para garantir que o carregamento dos anúncios esteja dentro do limite de 2 segundos para 95% das requisições.  
+- Testar a segurança do sistema, verificando a restrição de acesso ao painel administrativo.
+
+## 9. Glossário e Considerações Finais
+
+**Glossário:**  
+- **Anúncio:** Publicação realizada por um membro contendo informações sobre um serviço, produto ou empresa.  
+- **Administrador:** Usuário com direitos especiais para gerenciar e moderar os anúncios.  
+- **Filtro de Proximidade:** Ferramenta que utiliza dados de localização para exibir anúncios próximos ao usuário.  
+
+**Considerações Finais:**  
+Este documento serve como referência para a implementação do aplicativo “Igreja Presbiteriana Metropolitana Classificados App”. O desenvolvimento deverá seguir as melhores práticas de engenharia de software, garantindo clareza e consistência nas funcionalidades propostas.
+
+---
+
+Em resumo, o SRS apresentado cobre os requisitos essenciais para a criação de um sistema de classificados focado na comunidade da Igreja Presbiteriana Metropolitana, definindo desde o fluxo de submissão e aprovação de anúncios até a implementação de uma interface amigável com filtros avançados. Este ponto de partida, juntamente com as orientações de implementação (utilizando Next.JS, shadcn, Tailwind CSS e Supabase), possibilita uma estrutura robusta para iniciar o desenvolvimento do aplicativo.
+
