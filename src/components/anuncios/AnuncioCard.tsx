@@ -1,13 +1,5 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge'; // Para exibir a categoria
 import { Button } from '@/components/ui/button'; // Importar o Button
 
@@ -61,7 +53,6 @@ export function AnuncioCard({ anuncio }: AnuncioCardProps) {
   } 
   // Tentativa 2: assumindo que categorias é um objeto e não um array
   else if (anuncio.categorias && typeof anuncio.categorias === 'object' && anuncio.categorias !== null && 'nome_categoria' in anuncio.categorias) {
-    // @ts-ignore
     nomeCategoria = String(anuncio.categorias.nome_categoria);
     console.log('Categoria encontrada pelo método 2:', nomeCategoria);
   }

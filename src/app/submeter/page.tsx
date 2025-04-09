@@ -22,7 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import {
@@ -201,16 +201,12 @@ export default function SubmeterAnuncioPage() {
 
       console.log("Upload concluído com sucesso:", urlData.publicUrl);
       return urlData.publicUrl;
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Registrar informações detalhadas sobre o erro
-      console.error('Erro no upload da imagem:', {
-        message: error.message || 'Erro desconhecido',
-        name: error.name || 'N/A',
-        code: error.code || 'N/A',
-        stack: error.stack || 'N/A'
-      });
+      const errorMessage = error instanceof Error ? error.message : 'Ocorreu um erro desconhecido durante o upload da imagem';
+      console.error('Erro no upload da imagem:', error);
       
-      setError(`Erro no upload: ${error.message || 'Ocorreu um erro desconhecido durante o upload da imagem'}`);
+      setError(`Erro no upload: ${errorMessage}`);
       return null;
     }
   };
@@ -223,16 +219,18 @@ export default function SubmeterAnuncioPage() {
     try {
       // Verificar conexão com o Supabase antes de prosseguir
       try {
-        const { data: connectionTest, error: connectionError } = await supabase.from('categorias').select('count', { count: 'exact', head: true });
+        // Apenas verificar o erro é suficiente
+        const { error: connectionError } = await supabase.from('categorias').select('count', { count: 'exact', head: true });
         
         if (connectionError) {
           throw new Error(`Erro de conexão com o banco de dados: ${connectionError.message}`);
         }
         
         console.log('Conexão com o Supabase OK.');
-      } catch (connErr: any) {
+      } catch (connErr: unknown) {
+        const errorMessage = connErr instanceof Error ? connErr.message : 'Erro desconhecido na verificação de conexão';
         console.error('Falha na verificação de conexão:', connErr);
-        throw new Error(`Não foi possível estabelecer conexão com o servidor. Por favor, tente novamente mais tarde. Detalhes: ${connErr.message}`);
+        throw new Error(`Não foi possível estabelecer conexão com o servidor. Por favor, tente novamente mais tarde. Detalhes: ${errorMessage}`);
       }
 
       // Convertendo categoriaId para número
@@ -288,9 +286,10 @@ export default function SubmeterAnuncioPage() {
       form.reset();
       setImagePreviewUrls([]);
       setImages([]);
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Ocorreu um erro desconhecido.";
       console.error("Erro ao submeter anúncio:", err);
-      setError(err.message || "Ocorreu um erro ao submeter o anúncio. Tente novamente.");
+      setError(`Ocorreu um erro ao submeter o anúncio. Tente novamente. Detalhes: ${errorMessage}`);
     } finally {
       setLoading(false);
       setUploadProgress(0);
@@ -572,61 +571,18 @@ export default function SubmeterAnuncioPage() {
             <FormField
               control={form.control}
               name="numeroWhatsapp"
-              render={({ field }) => {
-                // Estado local para manter o valor formatado
-                const [inputValue, setInputValue] = useState<string>('');
-                
-                // Função de formatação
-                const formatPhoneNumber = (value: string) => {
-                  const numbers = value.replace(/\D/g, '');
-                  let formatted = '';
-                  
-                  if (numbers.length <= 2) {
-                    formatted = numbers.length ? `(${numbers}` : '';
-                  } else if (numbers.length <= 6) {
-                    formatted = `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
-                  } else if (numbers.length <= 10) {
-                    formatted = `(${numbers.slice(0, 2)}) ${numbers.slice(2, 6)}-${numbers.slice(6)}`;
-                  } else {
-                    formatted = `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
-                  }
-                  
-                  return formatted;
-                };
-                
-                // Efeito para formatar o valor inicial ou quando ele mudar
-                useEffect(() => {
-                  if (field.value) {
-                    setInputValue(formatPhoneNumber(field.value));
-                  }
-                }, [field.value]);
-                
-                return (
-                  <FormItem>
-                    <FormLabel className="text-zinc-200">Número de WhatsApp (com DDD)</FormLabel>
-                    <FormControl>
-                      <Input 
-                        type="tel" 
-                        placeholder="Ex: (11) 99999-8888" 
-                        className="border-zinc-700 bg-zinc-800 text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-zinc-500"
-                        value={inputValue}
-                        onChange={(e) => {
-                          const formatted = formatPhoneNumber(e.target.value);
-                          setInputValue(formatted);
-                          
-                          // Passa apenas os números para o formulário
-                          field.onChange(e.target.value.replace(/\D/g, ''));
-                        }}
-                        onBlur={field.onBlur}
-                      />
-                    </FormControl>
-                    <FormDescription className="text-zinc-400">
-                      Seu contato principal para interessados.
-                    </FormDescription>
-                    <FormMessage className="text-red-400 font-bold text-sm mt-1" />
-                  </FormItem>
-                );
-              }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-zinc-200">Número de WhatsApp (com DDD)</FormLabel>
+                  <FormControl>
+                    <FormattedPhoneNumberInput field={field} />
+                  </FormControl>
+                  <FormDescription className="text-zinc-400">
+                    Seu contato principal para interessados.
+                  </FormDescription>
+                  <FormMessage className="text-red-400 font-bold text-sm mt-1" />
+                </FormItem>
+              )}
             />
 
             {/* Redes Sociais */}
@@ -817,4 +773,62 @@ export default function SubmeterAnuncioPage() {
       </div>
     </main>
   );
-} 
+}
+
+// Novo componente para Input de Telefone Formatado
+interface FormattedPhoneNumberInputProps {
+  field: any; // Idealmente, tipar isso com base no react-hook-form ControllerRenderProps
+}
+
+const FormattedPhoneNumberInput: React.FC<FormattedPhoneNumberInputProps> = ({ field }) => {
+  const [inputValue, setInputValue] = useState<string>('');
+
+  // Função de formatação
+  const formatPhoneNumber = (value: string): string => {
+    const numbers = value.replace(/\D/g, '');
+    let formatted = '';
+    
+    if (numbers.length <= 2) {
+      formatted = numbers.length ? `(${numbers}` : '';
+    } else if (numbers.length <= 6) {
+      formatted = `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
+    } else if (numbers.length <= 10) {
+      formatted = `(${numbers.slice(0, 2)}) ${numbers.slice(2, 6)}-${numbers.slice(6)}`;
+    } else {
+      formatted = `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
+    }
+    
+    return formatted;
+  };
+
+  // Efeito para formatar o valor inicial ou quando ele mudar externamente
+  useEffect(() => {
+    if (field.value) {
+      setInputValue(formatPhoneNumber(field.value));
+    } else {
+      setInputValue(''); // Limpa se o valor do form for resetado
+    }
+  }, [field.value]);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/\D/g, '');
+    const formatted = formatPhoneNumber(rawValue);
+    setInputValue(formatted);
+    
+    // Passa apenas os números para o formulário
+    field.onChange(rawValue);
+  };
+
+  return (
+    <Input 
+      type="tel" 
+      placeholder="Ex: (11) 99999-8888" 
+      className="border-zinc-700 bg-zinc-800 text-zinc-100 placeholder:text-zinc-500 focus-visible:ring-zinc-500"
+      value={inputValue}
+      onChange={handleChange}
+      onBlur={field.onBlur}
+      name={field.name}
+      ref={field.ref}
+    />
+  );
+}; 

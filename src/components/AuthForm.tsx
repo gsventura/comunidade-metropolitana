@@ -13,7 +13,6 @@ export function AuthForm() {
   // Removemos email, password, loading local. O erro pode vir da action.
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition(); // Hook para loading state
-  const router = useRouter(); // Mantemos o router caso precisemos dele para outra coisa
   // const supabase = createClientComponentClient<Database>(); // Não precisa mais
 
   // Removemos o handleSignIn client-side

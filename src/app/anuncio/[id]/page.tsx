@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { Link as LinkIcon, MapPin, ArrowLeft } from 'lucide-react'; // Ícones
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
-import type { Anuncio } from '@/components/anuncios/AnuncioCard'; // Importar o tipo Anuncio
 
 // Definir interface para os parâmetros da página (vem da URL dinâmica)
 interface AnuncioPageProps {
@@ -56,7 +55,7 @@ export default async function AnuncioPage({ params }: AnuncioPageProps) {
     // Tratar os tipos corretamente
     const redesSociaisEntries = Object.entries(anuncio.redes_sociais as Record<string, string>);
     redesSociaisLinks = redesSociaisEntries
-      .filter(([_, value]) => value) // Filtrar links vazios
+      .filter((entry) => entry[1]) // Filtrar links vazios
       .map(([key, value]) => ({ 
         key: key.charAt(0).toUpperCase() + key.slice(1), 
         url: value 
