@@ -778,7 +778,7 @@ export default function SubmeterAnuncioPage() {
 
 // Novo componente para Input de Telefone Formatado
 interface FormattedPhoneNumberInputProps {
-  field: ControllerRenderProps<any, any>; // Usando a tipagem correta do react-hook-form
+  field: ControllerRenderProps<FormValues, 'numeroWhatsapp'>;
 }
 
 const FormattedPhoneNumberInput: React.FC<FormattedPhoneNumberInputProps> = ({ field }) => {
