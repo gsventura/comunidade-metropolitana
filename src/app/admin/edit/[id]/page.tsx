@@ -3,8 +3,13 @@
 
 import { EditarAnuncioClient } from './client';
 
+// Definir os tipos corretos para o componente da página
+interface PageParams {
+  id: string;
+}
+
 // Este é o Server Component que recebe os params
-export default function EditarAnuncioPage({ params }: { params: { id: string } }) {
+export default function EditarAnuncioPage({ params }: { params: PageParams }) {
   // Extrair o ID do parâmetro
   const anuncioId = params.id;
   
