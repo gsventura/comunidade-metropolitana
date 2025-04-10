@@ -3,13 +3,14 @@
 
 import { EditarAnuncioClient } from './client';
 
-// Definir os tipos corretos para o componente da página
-interface PageParams {
-  id: string;
+// Esta é a tipagem correta para páginas dinâmicas no Next.js App Router
+type Props = {
+  params: { id: string }
+  searchParams: { [key: string]: string | string[] | undefined }
 }
 
 // Este é o Server Component que recebe os params
-export default function EditarAnuncioPage({ params }: { params: PageParams }) {
+export default function EditarAnuncioPage({ params }: Props) {
   // Extrair o ID do parâmetro
   const anuncioId = params.id;
   
