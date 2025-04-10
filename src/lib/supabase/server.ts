@@ -15,7 +15,7 @@ export const createClient = (cookieStore: ReadonlyRequestCookies) => {
         set(name: string, value: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value, ...options });
-          } catch (_error) {
+          } catch {
             // O middleware pode definir cookies antes do cookieStore estar pronto
             // Ignorar este erro nesse caso específico
           }
@@ -23,7 +23,7 @@ export const createClient = (cookieStore: ReadonlyRequestCookies) => {
         remove(name: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value: '', ...options });
-          } catch (_error) {
+          } catch {
              // O middleware pode definir cookies antes do cookieStore estar pronto
             // Ignorar este erro nesse caso específico
           }

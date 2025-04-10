@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 // import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"; // Não precisa mais do client aqui
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation"; // Removida, pois não está sendo usada
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

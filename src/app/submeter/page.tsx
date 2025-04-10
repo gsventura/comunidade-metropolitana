@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
+import { ControllerRenderProps } from "react-hook-form";
 
 // Tipo para os dados de uma imagem
 interface ImageData {
@@ -613,7 +614,7 @@ export default function SubmeterAnuncioPage() {
                       </FormControl>
                     </div>
                     <FormDescription className="text-zinc-400">
-                      Digite apenas seu nome de usuário, sem "@"
+                      Digite apenas seu nome de usuário, sem &quot;@&quot;
                     </FormDescription>
                     <FormMessage className="text-red-400 font-bold text-sm mt-1" />
                   </FormItem>
@@ -640,7 +641,7 @@ export default function SubmeterAnuncioPage() {
                       </FormControl>
                     </div>
                     <FormDescription className="text-zinc-400">
-                      Digite seu nome de usuário com ou sem "@"
+                      Digite seu nome de usuário com ou sem &quot;@&quot;
                     </FormDescription>
                     <FormMessage className="text-red-400 font-bold text-sm mt-1" />
                   </FormItem>
@@ -777,7 +778,7 @@ export default function SubmeterAnuncioPage() {
 
 // Novo componente para Input de Telefone Formatado
 interface FormattedPhoneNumberInputProps {
-  field: any; // Idealmente, tipar isso com base no react-hook-form ControllerRenderProps
+  field: ControllerRenderProps<any, any>; // Usando a tipagem correta do react-hook-form
 }
 
 const FormattedPhoneNumberInput: React.FC<FormattedPhoneNumberInputProps> = ({ field }) => {
