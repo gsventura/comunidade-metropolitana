@@ -3,13 +3,15 @@
 
 import { EditarAnuncioClient } from './client';
 
-// Definir o tipo Params como uma Promise conforme recomendado para Next.js 15
-type Params = Promise<{ id: string }>;
-
-// Este é o Server Component que recebe os params
-export default async function EditarAnuncioPage({ params }: { params: Params }) {
-  // Extrair o ID do parâmetro, aguardando a resolução da Promise
-  const { id } = await params;
+// Conforme documentação do Next.js 15, params agora é uma Promise
+export default async function EditarAnuncioPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  // Extrair o ID do parâmetro usando await
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
   
   // Renderizar o Client Component, passando o ID como prop
   return <EditarAnuncioClient id={id} />;
