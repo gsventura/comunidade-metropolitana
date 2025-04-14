@@ -18,10 +18,16 @@ interface AnuncioPageProps {
 }
 
 // Página como Server Component (async)
-export default async function AnuncioPage({ params }: AnuncioPageProps) {
+export default async function AnuncioPage({ 
+  params 
+}: { 
+  params: Promise<{ id: string }>; // params agora é uma Promise
+}) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
-  const { id } = params;
+  // Extrair o ID aguardando a Promise
+  const resolvedParams = await params; 
+  const id = resolvedParams.id;
 
   // Buscar o anúncio específico pelo ID junto com a categoria relacionada
   const { data: anuncio, error } = await supabase
