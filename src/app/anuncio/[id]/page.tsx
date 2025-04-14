@@ -184,10 +184,16 @@ export default async function AnuncioPage({
 }
 
 // Opcional: Gerar metadados dinâmicos para SEO
-export async function generateMetadata({ params }: AnuncioPagePropsForMetadata) {
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ id: string }>; // params agora é uma Promise aqui também
+}) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
-  const { id } = params;
+  // Extrair o ID aguardando a Promise
+  const resolvedParams = await params;
+  const id = resolvedParams.id; 
 
   // Usar a mesma consulta da função principal para consistência
   const { data: anuncio } = await supabase
