@@ -11,13 +11,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 
 
-// Definir interface apenas para generateMetadata, que ainda usa a estrutura síncrona
-interface AnuncioPagePropsForMetadata {
-  params: { 
-    id: string; 
-  };
-}
-
 // Página como Server Component (async)
 export default async function AnuncioPage({ 
   params 
