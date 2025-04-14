@@ -17,6 +17,13 @@ interface AnuncioPageProps {
   };
 }
 
+// Definir interface apenas para generateMetadata, que ainda usa a estrutura síncrona
+interface AnuncioPagePropsForMetadata {
+  params: { 
+    id: string; 
+  };
+}
+
 // Página como Server Component (async)
 export default async function AnuncioPage({ 
   params 
@@ -183,7 +190,7 @@ export default async function AnuncioPage({
 }
 
 // Opcional: Gerar metadados dinâmicos para SEO
-export async function generateMetadata({ params }: AnuncioPageProps) {
+export async function generateMetadata({ params }: AnuncioPagePropsForMetadata) {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
   const { id } = params;
