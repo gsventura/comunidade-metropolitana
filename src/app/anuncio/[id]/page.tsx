@@ -10,12 +10,6 @@ import { Link as LinkIcon, MapPin, ArrowLeft } from 'lucide-react'; // Ícones
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 
-// Definir interface para os parâmetros da página (vem da URL dinâmica)
-interface AnuncioPageProps {
-  params: {
-    id: string; // O id do anúncio vindo da URL
-  };
-}
 
 // Definir interface apenas para generateMetadata, que ainda usa a estrutura síncrona
 interface AnuncioPagePropsForMetadata {
