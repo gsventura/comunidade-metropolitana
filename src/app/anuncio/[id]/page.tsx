@@ -56,7 +56,8 @@ export default async function AnuncioPage({
     try {
       redesSociaisObj = JSON.parse(redesSociaisObj);
     } catch (e) {
-      redesSociaisObj = {};
+      console.error(e);
+    redesSociaisObj = {};
     }
   }
   if (redesSociaisObj && typeof redesSociaisObj === 'object') {
