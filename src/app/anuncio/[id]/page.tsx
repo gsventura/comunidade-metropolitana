@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from '@/components/ui/button';
 import { Link as LinkIcon, MapPin, ArrowLeft } from 'lucide-react'; // Ícones
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import { faWhatsapp, faFacebookF, faInstagram, faTwitter, faLinkedinIn, faTiktok } from '@fortawesome/free-brands-svg-icons';
 import ImageCarousel from './ImageCarousel';
 
 
@@ -49,17 +49,23 @@ export default async function AnuncioPage({
   // Tratamento para o nome da categoria
   const nomeCategoria = anuncio.categorias?.nome_categoria || 'Sem Categoria';
 
-  // Tratamento para links de redes sociais (assumindo um objeto JSON ou campos separados)
-  // Exemplo se for um JSON na coluna 'redes_sociais' com chaves 'facebook', 'instagram' etc.
+  // Tratamento robusto para links de redes sociais (objeto ou string JSON) vindo de links_redes_sociais
   let redesSociaisLinks: { key: string, url: string }[] = [];
-  if (anuncio.redes_sociais && typeof anuncio.redes_sociais === 'object') {
-    // Tratar os tipos corretamente
-    const redesSociaisEntries = Object.entries(anuncio.redes_sociais as Record<string, string>);
+  let redesSociaisObj = anuncio.links_redes_sociais;
+  if (typeof redesSociaisObj === 'string') {
+    try {
+      redesSociaisObj = JSON.parse(redesSociaisObj);
+    } catch (e) {
+      redesSociaisObj = {};
+    }
+  }
+  if (redesSociaisObj && typeof redesSociaisObj === 'object') {
+    const redesSociaisEntries = Object.entries(redesSociaisObj as Record<string, string>);
     redesSociaisLinks = redesSociaisEntries
       .filter((entry) => entry[1]) // Filtrar links vazios
-      .map(([key, value]) => ({ 
-        key: key.charAt(0).toUpperCase() + key.slice(1), 
-        url: value 
+      .map(([key, value]) => ({
+        key: key.charAt(0).toUpperCase() + key.slice(1),
+        url: value.startsWith('http') ? value : `https://${value}` // garantir protocolo
       }));
   }
   // Se os links forem colunas separadas (ex: link_facebook, link_instagram), adapte a lógica
@@ -126,6 +132,50 @@ export default async function AnuncioPage({
         <p className="text-base text-zinc-200 whitespace-pre-line leading-relaxed">{anuncio.descricao}</p>
       </section>
 
+      {/* Redes Sociais */}
+      {redesSociaisLinks.length > 0 && (
+        <section className="mb-4">
+          <div className="flex flex-wrap justify-center gap-3">
+            {redesSociaisLinks.map(link => {
+              let icon;
+              switch (link.key.toLowerCase()) {
+                case 'facebook':
+                  icon = <FontAwesomeIcon icon={faFacebookF} className="h-5 w-5 text-blue-600" />;
+                  break;
+                case 'instagram':
+                  icon = <FontAwesomeIcon icon={faInstagram} className="h-5 w-5 text-pink-500" />;
+                  break;
+                case 'twitter':
+                  icon = <FontAwesomeIcon icon={faTwitter} className="h-5 w-5 text-sky-400" />;
+                  break;
+                case 'linkedin':
+                  icon = <FontAwesomeIcon icon={faLinkedinIn} className="h-5 w-5 text-blue-700" />;
+                  break;
+                case 'tiktok':
+                  icon = <FontAwesomeIcon icon={faTiktok} className="h-5 w-5 text-black" />;
+                  break;
+                case 'website':
+                  icon = <LinkIcon className="h-5 w-5 text-zinc-700" />;
+                  break;
+                default:
+                  icon = <LinkIcon className="h-5 w-5 text-zinc-700" />;
+              }
+              return (
+                <a
+                  key={link.key}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center w-11 h-11 rounded-full bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 shadow-md transition-colors"
+                  title={link.key}
+                >
+                  {icon}
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      )}
       {/* Localização */}
       <section className="mb-6">
         <div className="flex items-center gap-2 text-zinc-500">
@@ -133,25 +183,6 @@ export default async function AnuncioPage({
           <span className="text-base">{endereco}</span>
         </div>
       </section>
-      {/* Redes Sociais */}
-      {redesSociaisLinks.length > 0 && (
-        <section className="mb-2">
-          <div className="flex flex-wrap justify-center gap-3">
-            {redesSociaisLinks.map(link => (
-              <a
-                key={link.key}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 shadow-sm transition-colors"
-                title={link.key}
-              >
-                <LinkIcon className="h-5 w-5 text-zinc-700" />
-              </a>
-            ))}
-          </div>
-        </section>
-      )}
     </main>
   );
 }

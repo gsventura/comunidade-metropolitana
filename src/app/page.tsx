@@ -134,7 +134,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col items-center pt-2 pb-12 md:pt-4 md:pb-24">
       <header className="w-full max-w-3xl mx-auto flex flex-col items-center text-center pt-4 pb-10 bg-background">
         <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4 tracking-tight">Comunidade Metropolitana</h1>
-        <p className="text-lg md:text-xl text-muted-foreground mb-6">Bem-vindo(a)! Publique e encontre anúncios da sua comunidade de forma simples e organizada.</p>
+        <p className="text-lg md:text-xl text-muted-foreground mb-6">Bem-vindo(a)! Publique e encontre anúncios da nossa comunidade de forma simples e organizada.</p>
         <div className="flex flex-row gap-4 items-center justify-center w-full mb-2">
           <Link href="/submeter" passHref legacyBehavior>
             <a>
