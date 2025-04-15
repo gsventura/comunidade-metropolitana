@@ -230,7 +230,14 @@ export default function AdminDashboard() {
           ) : (
             anuncios.map((anuncio) => {
                // Acessar nome_categoria corretamente
-               const nomeCategoria = anuncio.categorias?.[0]?.nome_categoria || 'Sem Categoria';
+               let nomeCategoria: string | null = null;
+               if (anuncio.categorias && Array.isArray(anuncio.categorias) && anuncio.categorias[0] && typeof anuncio.categorias[0].nome_categoria === 'string') {
+                 nomeCategoria = anuncio.categorias[0].nome_categoria;
+               } else if (anuncio.categorias && typeof anuncio.categorias === 'object' && anuncio.categorias !== null && 'nome_categoria' in anuncio.categorias) {
+                 nomeCategoria = String(anuncio.categorias.nome_categoria);
+               } else {
+                 nomeCategoria = 'Sem Categoria';
+               }
                // Verificar se este anúncio específico está em processamento
                const isProcessing = pendingIds[anuncio.id] || false;
                
