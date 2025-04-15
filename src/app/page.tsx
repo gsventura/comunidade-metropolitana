@@ -61,10 +61,10 @@ export default function Home() {
         .order('created_at', { ascending: false }); // Ordenar pelos mais recentes
 
       if (error) {
-        console.error('Erro ao buscar anúncios:', error);
+
         setError('Não foi possível carregar os anúncios.');
       } else {
-        console.log('Dados dos anúncios:', data);
+
         setAnuncios(data || []);
         setAnunciosFiltrados(data || []);
       }
@@ -83,7 +83,7 @@ export default function Home() {
         .order('nome_categoria', { ascending: true });
 
       if (error) {
-        console.error('Erro ao buscar categorias:', error);
+
       } else {
         setCategorias(data || []);
       }
