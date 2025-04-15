@@ -3,7 +3,17 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link'; // Importar Link
 import { createClient } from '@/lib/supabase/client';
-import { Button } from '@/components/ui/button'; // Importar Button
+import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+} from '@/components/ui/alert-dialog';
 import { AnuncioCard, Anuncio } from '@/components/anuncios/AnuncioCard'; // Importar AnuncioCard e o tipo Anuncio
 import { Input } from '@/components/ui/input'; // Para barra de pesquisa
 import { 
@@ -121,18 +131,47 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-12 md:p-24">
-      <div className="w-full max-w-6xl mb-8 flex justify-between items-center">
-        <h1 className="text-4xl font-bold">Classificados da Comunidade</h1>
-        <Link href="/submeter" passHref>
-          <Button
-            variant="outline"
-            className="border-2 border-primary text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all duration-300 font-semibold"
-          >
-            Publicar Anúncio
-          </Button>
-        </Link>
-      </div>
+    <main className="flex min-h-screen flex-col items-center pt-2 pb-12 md:pt-4 md:pb-24">
+      <header className="w-full max-w-3xl mx-auto flex flex-col items-center text-center pt-4 pb-10 bg-background">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-foreground mb-4 tracking-tight">Comunidade Metropolitana</h1>
+        <p className="text-lg md:text-xl text-muted-foreground mb-6">Bem-vindo(a)! Publique e encontre anúncios da sua comunidade de forma simples e organizada.</p>
+        <div className="flex flex-row gap-4 items-center justify-center w-full mb-2">
+          <Link href="/submeter" passHref legacyBehavior>
+            <a>
+              <Button
+                variant="outline"
+                className="border-primary text-primary hover:bg-primary hover:text-white hover:scale-105 transition-all duration-300 font-semibold px-8 py-2"
+              >
+                Submeter Anúncio
+              </Button>
+            </a>
+          </Link>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="ghost" className="text-muted-foreground font-semibold px-6 py-2">Como Funciona?</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent style={{ backgroundColor: '#18181B' }} className="text-white">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Como funciona?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Siga os passos abaixo para submeter um anúncio:
+                </AlertDialogDescription>
+                <div className="mt-2">
+                  <ol className="list-decimal list-inside text-left space-y-1">
+                    <li>Clique no botão <span className="font-semibold">Submeter Anúncio</span>.</li>
+                    <li>Preencha todos os campos corretamente.</li>
+                    <li>O anúncio será analisado pela liderança da igreja.</li>
+                    <li>Se aprovado, será publicado para todos.</li>
+                  </ol>
+                </div>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Fechar</AlertDialogCancel>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      </header>
 
       {/* Seção de Filtros */}
       <div className="w-full max-w-6xl mb-8 bg-card rounded-lg p-6 shadow-md border border-gray-200 dark:border-gray-700">

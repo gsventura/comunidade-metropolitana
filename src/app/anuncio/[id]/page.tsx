@@ -9,9 +9,11 @@ import { Button } from '@/components/ui/button';
 import { Link as LinkIcon, MapPin, ArrowLeft } from 'lucide-react'; // Ícones
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
+import ImageCarousel from './ImageCarousel';
 
 
 // Página como Server Component (async)
+
 export default async function AnuncioPage({ 
   params 
 }: { 
@@ -71,107 +73,86 @@ export default async function AnuncioPage({
   // Poderíamos adicionar um mapa aqui usando latitude/longitude
 
   return (
-    <main className="container mx-auto max-w-4xl px-4 py-8 md:py-12">
-      <div className="flex flex-col space-y-8">
-        {/* Botão Voltar */}
-        <div>
-          <Button variant="ghost" size="sm" asChild className="group mb-4 hover:bg-gray-100">
-            <Link href="/">
-              <ArrowLeft className="h-4 w-4 mr-2 transition-transform group-hover:-translate-x-1" />
-              Voltar para Home
-            </Link>
-          </Button>
-        </div>
-        
-        {/* Cabeçalho com Categoria e Título */}
-        <div className="space-y-3">
-          <Badge variant="secondary">{nomeCategoria}</Badge>
-          <h1 className="text-3xl md:text-4xl font-bold">{anuncio.titulo}</h1>
-          
-          {/* Nome do Anunciante */}
-          <div className="text-lg font-medium text-muted-foreground">
-            Por: {anuncio.nome_anunciante || 'Sem Nome do Anunciante'}
-          </div>
-          
-          {/* Botão WhatsApp */}
-          {anuncio.numero_whatsapp && (
-            <Button asChild variant="default" className="mt-2 bg-green-600 hover:bg-green-700 text-primary-foreground">
-              <a href={`https://wa.me/${anuncio.numero_whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener noreferrer">
-                <FontAwesomeIcon icon={faWhatsapp} className="mr-2 h-4 w-4" /> Conversar no WhatsApp
-              </a>
-            </Button>
-          )}
-        </div>
-        
-        {/* Seção de Imagens */}
-        <div className="w-full">
-          {anuncio.imagens && anuncio.imagens.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {anuncio.imagens.map((imgUrl: string, index: number) => (
-                <div key={index} className="relative aspect-video rounded-lg overflow-hidden shadow-md">
-                  <Image
-                    src={imgUrl}
-                    alt={`Imagem ${index + 1} de ${anuncio.titulo}`}
-                    fill
-                    style={{ objectFit: "cover" }}
-                    className="bg-gray-100"
-                  />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-md">
-              <Image
-                src="/default_ad.png"
-                alt="Imagem padrão do anúncio"
-                fill
-                style={{ objectFit: "cover" }}
-                className="bg-gray-100"
-              />
-            </div>
-          )}
-        </div>
-        
-        <Separator />
-        
-        {/* Descrição do Anúncio */}
-        <div>
-          <h2 className="text-xl font-semibold mb-2">Descrição</h2>
-          <p className="text-lg text-muted-foreground">
-            {anuncio.descricao}
-          </p>
-        </div>
-        
-        <Separator />
-        
-        {/* Localização */}
-        <div>
-          <h2 className="text-xl font-semibold mb-2">Localização</h2>
-          <div className="flex items-center text-muted-foreground">
-            <MapPin className="mr-2 h-5 w-5 flex-shrink-0" />
-            <span>{endereco}</span>
-          </div>
-        </div>
-        
-        {/* Links Redes Sociais */}
-        {redesSociaisLinks.length > 0 && (
-          <>
-            <Separator />
-            <div>
-              <h2 className="text-xl font-semibold mb-2">Redes Sociais</h2>
-              <div className="flex flex-wrap gap-2">
-                {redesSociaisLinks.map(link => (
-                  <Button key={link.key} variant="outline" size="sm" asChild>
-                    <a href={link.url} target="_blank" rel="noopener noreferrer">
-                      <LinkIcon className="mr-2 h-4 w-4" /> {link.key}
-                    </a>
-                  </Button>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
+    <main className="w-full max-w-2xl mx-auto px-2 py-6 md:py-10">
+      {/* Voltar */}
+      <div className="mb-4">
+        <Button variant="ghost" size="sm" asChild className="group hover:bg-zinc-100">
+          <Link href="/">
+            <ArrowLeft className="h-4 w-4 mr-2 transition-transform group-hover:-translate-x-1" />
+            <span className="text-base">Voltar</span>
+          </Link>
+        </Button>
       </div>
+      {/* Carrossel de imagens */}
+      <section className="w-full flex flex-col items-center mb-6">
+        {anuncio.imagens && anuncio.imagens.length > 0 ? (
+          <ImageCarousel images={anuncio.imagens} titulo={anuncio.titulo} />
+        ) : (
+          <div className="w-full max-w-md aspect-video rounded-xl overflow-hidden shadow bg-zinc-100 flex items-center justify-center relative" style={{ minHeight: 180, maxHeight: 340 }}>
+            <Image
+              src="/default_ad.png"
+              alt="Imagem padrão do anúncio"
+              fill
+              style={{ objectFit: "cover" }}
+              className="bg-zinc-100"
+            />
+          </div>
+        )}
+      </section>
+      {/* Título, categoria e anunciante */}
+      <section className="flex flex-col items-center text-center mb-6 gap-2">
+        <Badge variant="secondary" className="mb-1 text-xs px-3 py-1 rounded-full">{nomeCategoria}</Badge>
+        <h1 className="text-3xl md:text-5xl font-extrabold leading-tight break-words text-zinc-50">{anuncio.titulo}</h1>
+        <span className="text-zinc-500 text-sm">Por {anuncio.nome_anunciante || 'Anunciante'}</span>
+        {/* Botão WhatsApp destacado */}
+        {anuncio.numero_whatsapp && (
+          <a
+            href={`https://wa.me/${anuncio.numero_whatsapp.replace(/\D/g, '')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 w-full md:w-auto flex justify-center"
+          >
+            <Button
+              type="button"
+              className="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white text-base font-semibold px-6 py-3 rounded-lg flex items-center gap-2 shadow"
+            >
+              <FontAwesomeIcon icon={faWhatsapp} className="h-5 w-5" /> Conversar no WhatsApp
+            </Button>
+          </a>
+        )}
+      </section>
+      {/* Descrição */}
+      <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-1 text-zinc-50">Descrição</h2>
+        <p className="text-base text-zinc-200 whitespace-pre-line leading-relaxed">{anuncio.descricao}</p>
+      </section>
+
+      {/* Localização */}
+      <section className="mb-6">
+        <div className="flex items-center gap-2 text-zinc-500">
+          <MapPin className="h-5 w-5" />
+          <span className="text-base">{endereco}</span>
+        </div>
+      </section>
+      {/* Redes Sociais */}
+      {redesSociaisLinks.length > 0 && (
+        <section className="mb-2">
+          <div className="flex flex-wrap justify-center gap-3">
+            {redesSociaisLinks.map(link => (
+              <a
+                key={link.key}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 shadow-sm transition-colors"
+                title={link.key}
+              >
+                <LinkIcon className="h-5 w-5 text-zinc-700" />
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }
