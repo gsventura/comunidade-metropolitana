@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation'; // Para redirecionar se anúncio não encontrado
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { Button } from '@/components/ui/button';
 import { Link as LinkIcon, MapPin, ArrowLeft } from 'lucide-react'; // Ícones
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
